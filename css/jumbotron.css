@@ -1,0 +1,6 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+html,body {
+	height:100%;
+}
+.special,.special .jumbotron {height:100%;width: 100%;margin-bottom:0; background-color: black;background-image:url('images/snowy_night.jpg'); background-size:cover;}
+.splash{}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <script src='https://cdn.firebase.com/js/client/1.0.11/firebase.js'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  <!--<link rel='stylesheet' type='text/css' href='./css/narrow.css'>-->
+  <link rel='stylesheet' type="text/css" href="./css/bootstrap.css">
+</head>
+<body>
+
+<div class="header">
+    <ul class="nav nav-pills pull-right">
+    </ul>
+    <h3 class="text-muted">MPZ 2.0</h3>
+</div>
+
+<div class="row marketing">
+    <div class="col-md-6">
+        <h1 class="container">Zork</h1>
+        <div class="jumbotron" style="height:100%">
+            <div id='messagesDiv' class="container" style="overflow: auto; height: 500px;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h1 class="container">Chat</h1>
+        <div class="jumbotron" style="height: 100%">
+            <div id ='chatDiv' class="container" style="overflow: auto; height: 500px;"></div>
+        </div>
+    </div>
+</div>
+
+<form class="form-inline" role="form">
+    <div class="form-group">
+        <input type='text' id='nameInput' class="form-control" placeholder='Name'>
+    </div>
+    <div class="form-group">
+        <input type='text' id='messageInput' class="form-control" placeholder='Message'>
+    </div>
+</form>
+
+
+
+  <script>
+  var myDataRef = new Firebase('https://brilliant-fire-4503.firebaseio.com');
+  var zorkRef = new Firebase('https://brilliant-fire-4503.firebaseio.com/zorktext');
+  var commandRef = myDataRef.child("command");
+  var chatRef = myDataRef.child("chat");
+  
+  var dataRef = new Firebase('https://brilliant-fire-4503.firebaseio.com/zorktext');
+
+  $('#messageInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#nameInput').val();
+      var text = $('#messageInput').val();
+      commandRef.set(text);
+        chatRef.push({name: name, text: text});
+      $('#messageInput').val('');
+    }
+  });
+  
+  zorkRef.on('value', function(snapshot) {
+	if(snapshot.val!=null){
+		displayZorkText(snapshot.val());
+	}
+});
+  chatRef.on('child_added', function(snapshot) {
+      var message = snapshot.val();
+      displayChatMessage(message.name, message.text);
+  });
+	
+	function displayZorkText(text){
+		var newdiv = $('div');
+		document.getElementById('messagesDiv').innerHTML = text.replace(/\n/g, '<br />');
+	}
+
+  function displayChatMessage(name, text) {
+      $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#chatDiv'));
+      $('#chatDiv')[0].scrollTop = $('#chatDiv')[0].scrollHeight;
+  };
+  </script>
+</body>
+</html>
